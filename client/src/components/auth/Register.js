@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -7,13 +8,32 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== passwordConfirmation) {
-      console.log("password do not match");
-    } else {
-      console.log(name, email, password, passwordConfirmation);
+      return console.log("password do not match");
+    }
+
+    console.log(name, email, password, passwordConfirmation);
+    const user = {
+      name,
+      email,
+      password,
+    };
+
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const body = JSON.stringify(user);
+      const res = await axios.post("/api/users", body, config);
+      console.log(res);
+    } catch (error) {
+      console.error(error.data);
     }
   };
 
