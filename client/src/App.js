@@ -12,6 +12,7 @@ import { loadUser } from "./actions/auth";
 import setAuthToken from "./utils/setAuthToken";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./components/routing/PrivateRoute";
+import ProfileForm from "./components/profile-form/ProfileForm";
 
 const App = () => {
   
@@ -38,6 +39,10 @@ const App = () => {
           <Route
             path="dashboard"
             element={<PrivateRoute component={Dashboard} />}
+          />
+                    <Route
+            path="create-profile"
+            element={<PrivateRoute component={ProfileForm} />}
           />
         </Routes>
       </section>
