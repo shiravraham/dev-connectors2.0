@@ -1,59 +1,90 @@
-import React, {useState, Fragment} from 'react'
-import PropTypes from 'prop-types'
-import { Link, useMatch, useNavigate } from 'react-router-dom'
-import { connect } from 'react-redux'
+import React, { Fragment, useState, useEffect } from 'react';
+import { Link, useMatch, useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { createProfile, getCurrentProfile } from '../../actions/profile';
 
-const ProfileForm = props => {
-  const {
-    profile: { profile, loading },
-    createProfile,
-    getCurrentProfile
-  } = props;
+/*
+  NOTE: declare initialState outside of component
+  so that it doesn't trigger a useEffect
+  we can then safely use this to construct our profileData
+ */
+const initialState = {
+  company: '',
+  website: '',
+  location: '',
+  status: '',
+  skills: '',
+  githubusername: '',
+  bio: '',
+  twitter: '',
+  facebook: '',
+  linkedin: '',
+  youtube: '',
+  instagram: ''
+};
 
-  const [company, setCompany] = useState('');
-  const [website, setWebsite] = useState('');
-  const [location, setLocation] = useState('');
-  const [status, setStatus] = useState('');
-  const [skills, setSkills] = useState('');
-  const [githubUsername, setGithubUsername] = useState('');
-  const [bio, setBio] = useState('');
-  const [twitter, setTwitter] = useState('');
-  const [facebook, setFacebook] = useState('');
-  const [linkedIn, setLinkedIn] = useState('');
-  const [youtube, setYoutube] = useState('');
-  const [instagram, setInstagram] = useState('');
+const ProfileForm = ({
+  profile: { profile, loading },
+  createProfile,
+  getCurrentProfile
+}) => {
+  const [formData, setFormData] = useState(initialState);
+
+  const creatingProfile = useMatch('/create-profile');
 
   const [displaySocialInputs, toggleSocialInputs] = useState(false);
-  
-  const creatingProfile = useMatch('/create-profile');
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // if there is no profile, attempt to fetch one
+    if (!profile) getCurrentProfile();
+
+    // if we finished loading and we do have a profile
+    // then build our profileData
+    if (!loading && profile) {
+      const profileData = { ...initialState };
+      for (const key in profile) {
+        if (key in profileData) profileData[key] = profile[key];
+      }
+      for (const key in profile.social) {
+        if (key in profileData) profileData[key] = profile.social[key];
+      }
+      // the skills may be an array from our API response
+      if (Array.isArray(profileData.skills))
+        profileData.skills = profileData.skills.join(', ');
+      // set local state with the profileData
+      setFormData(profileData);
+    }
+  }, [loading, getCurrentProfile, profile]);
+
+  const {
+    company,
+    website,
+    location,
+    status,
+    skills,
+    githubusername,
+    bio,
+    twitter,
+    facebook,
+    linkedin,
+    youtube,
+    instagram
+  } = formData;
+
+  const onChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onSubmit = (e) => {
     e.preventDefault();
-
-    const formData = {
-      company: company,
-      website: website,
-      location: location,
-      status: status,
-      skills: skills,
-      githubusername: githubUsername,
-      bio: bio,
-      twitter: twitter,
-      facebook: facebook,
-      linkedin: linkedIn,
-      youtube: youtube,
-      instagram: instagram
-    };
-    
-
     createProfile(formData, navigate, profile ? true : false);
   };
 
   return (
     <section className="container">
-            <h1 className="large text-primary">
+      <h1 className="large text-primary">
         {creatingProfile ? 'Create Your Profile' : 'Edit Your Profile'}
       </h1>
       <p className="lead">
@@ -65,7 +96,7 @@ const ProfileForm = props => {
       <small>* = required field</small>
       <form className="form" onSubmit={onSubmit}>
         <div className="form-group">
-          <select name="status" value={status} onChange={(e)=>setStatus(e.target.value)}>
+          <select name="status" value={status} onChange={onChange}>
             <option>* Select Professional Status</option>
             <option value="Developer">Developer</option>
             <option value="Junior Developer">Junior Developer</option>
@@ -86,7 +117,7 @@ const ProfileForm = props => {
             placeholder="Company"
             name="company"
             value={company}
-            onChange={(e)=>setCompany(e.target.value)}
+            onChange={onChange}
           />
           <small className="form-text">
             Could be your own company or one you work for
@@ -98,7 +129,7 @@ const ProfileForm = props => {
             placeholder="Website"
             name="website"
             value={website}
-            onChange={(e)=>setWebsite(e.target.value)}
+            onChange={onChange}
           />
           <small className="form-text">
             Could be your own or a company website
@@ -110,7 +141,7 @@ const ProfileForm = props => {
             placeholder="Location"
             name="location"
             value={location}
-            onChange={(e)=>setLocation(e.target.value)}
+            onChange={onChange}
           />
           <small className="form-text">
             City & state suggested (eg. Boston, MA)
@@ -122,7 +153,7 @@ const ProfileForm = props => {
             placeholder="* Skills"
             name="skills"
             value={skills}
-            onChange={(e)=>setSkills(e.target.value)}
+            onChange={onChange}
           />
           <small className="form-text">
             Please use comma separated values (eg. HTML,CSS,JavaScript,PHP)
@@ -133,8 +164,8 @@ const ProfileForm = props => {
             type="text"
             placeholder="Github Username"
             name="githubusername"
-            value={githubUsername}
-            onChange={(e)=>setGithubUsername(e.target.value)}
+            value={githubusername}
+            onChange={onChange}
           />
           <small className="form-text">
             If you want your latest repos and a Github link, include your
@@ -146,7 +177,7 @@ const ProfileForm = props => {
             placeholder="A short bio of yourself"
             name="bio"
             value={bio}
-            onChange={(e)=>setBio(e.target.value)}
+            onChange={onChange}
           />
           <small className="form-text">Tell us a little about yourself</small>
         </div>
@@ -171,7 +202,7 @@ const ProfileForm = props => {
                 placeholder="Twitter URL"
                 name="twitter"
                 value={twitter}
-                onChange={(e)=>setTwitter(e.target.value)}
+                onChange={onChange}
               />
             </div>
 
@@ -182,7 +213,7 @@ const ProfileForm = props => {
                 placeholder="Facebook URL"
                 name="facebook"
                 value={facebook}
-                onChange={(e)=>setFacebook(e.target.value)}
+                onChange={onChange}
               />
             </div>
 
@@ -193,7 +224,7 @@ const ProfileForm = props => {
                 placeholder="YouTube URL"
                 name="youtube"
                 value={youtube}
-                onChange={(e)=>setYoutube(e.target.value)}
+                onChange={onChange}
               />
             </div>
 
@@ -203,8 +234,8 @@ const ProfileForm = props => {
                 type="text"
                 placeholder="Linkedin URL"
                 name="linkedin"
-                value={linkedIn}
-                onChange={(e)=>setLinkedIn(e.target.value)}
+                value={linkedin}
+                onChange={onChange}
               />
             </div>
 
@@ -215,7 +246,7 @@ const ProfileForm = props => {
                 placeholder="Instagram URL"
                 name="instagram"
                 value={instagram}
-                onChange={(e)=>setInstagram(e.target.value)}
+                onChange={onChange}
               />
             </div>
           </Fragment>
@@ -227,8 +258,8 @@ const ProfileForm = props => {
         </Link>
       </form>
     </section>
-  )
-}
+  );
+};
 
 ProfileForm.propTypes = {
   createProfile: PropTypes.func.isRequired,
