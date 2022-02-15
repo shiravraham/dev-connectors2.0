@@ -13,15 +13,14 @@ import setAuthToken from "./utils/setAuthToken";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./components/routing/PrivateRoute";
 
-if(localStorage.token){
-  setAuthToken(localStorage.token);
-}
-
 const App = () => {
   
-useEffect( ()=>{
-  store.dispatch(loadUser());
-}, [])
+  useEffect(() => {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
+    store.dispatch(loadUser());
+  }, []);
 
   return (
   <Provider store={store}>
