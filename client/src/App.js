@@ -13,6 +13,8 @@ import setAuthToken from "./utils/setAuthToken";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./components/routing/PrivateRoute";
 import ProfileForm from "./components/profile-form/ProfileForm";
+import AddEducation from "./components/profile-form/AddEducation";
+import addExperience from "./components/profile-form/AddExperience";
 
 const App = () => {
   
@@ -47,6 +49,14 @@ const App = () => {
           <Route
             path="edit-profile"
             element={<PrivateRoute component={ProfileForm} />}
+          />
+          <Route
+            path="add-education"
+            element={<PrivateRoute component={AddEducation} />}
+          />
+          <Route
+            path="add-experience"
+            element={<PrivateRoute component={addExperience} />}
           />
         </Routes>
       </section>
