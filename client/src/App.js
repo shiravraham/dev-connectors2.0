@@ -16,6 +16,7 @@ import ProfileForm from "./components/profile-form/ProfileForm";
 import AddEducation from "./components/profile-form/AddEducation";
 import addExperience from "./components/profile-form/AddExperience";
 import Profiles from "./components/profiles/Profiles";
+import Profile from "./components/profile/Profile";
 
 const App = () => {
   
@@ -37,9 +38,10 @@ const App = () => {
       <section className="container">
         <Alert/>
         <Routes>
-          <Route path="register" element={<Register />} />
-          <Route path="login" element={<Login />} />
-          <Route path="profiles" element={<Profiles />} />
+          <Route exact path="register" element={<Register />} />
+          <Route exact path="login" element={<Login />} />
+          <Route exact path="profiles" element={<Profiles />} />
+          <Route exact path="profile/:id" element={<Profile />} />
           <Route
             path="dashboard"
             element={<PrivateRoute component={Dashboard} />}
